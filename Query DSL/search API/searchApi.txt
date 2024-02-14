@@ -1,0 +1,37 @@
+
+//This query retrieves all documents from the mylogs-apache-v1-* index.
+ GET mylogs-apache-v1-*/_search
+
+//This query retrieves 5 documents from the mylogs-apache-v1-* index, starting from the first document (index 0).
+GET mylogs-apache-v1-*/_search?size=5&from=0 
+
+
+//This query retrieves 5 documents from the `mylogs-apache-v1-*` index, starting from the first document (index 0), where the agent field matches the value Mozilla
+GET mylogs-apache-v1-*/_search?size=5&from=0&q=agent:mozilla 
+
+
+
+//_source: Specifies which fields should be included in the search results
+//sort: Specifies how the results should be sorted.
+//term: A type of query that looks for exact matches of a field's value
+
+POST mylogs-apache-v1*/_search
+{
+  "query": {
+    "term": {
+      "agent": {
+        "value": "mozilla"
+      }
+    }
+  },
+  "sort": [
+    {
+      "bytes": {
+        "order": "desc"
+      }
+    }
+  ],
+  "_source": ["agent","httpversion","verb","request"], 
+  "from": 0,
+  "size": 20
+}

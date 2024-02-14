@@ -1,0 +1,29 @@
+//bool: This is a type of query that allows you to combine multiple queries together
+//must: This is a clause inside the bool query that specifies that both conditions must be met.
+//Boost: This is an optional parameter for a term query that allows you to give a higher importance (or boost) to certain fields
+
+GET documents-books-v1/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "term": {
+            "description": {
+              "value": "javascript"
+            }
+          }
+        },
+        {
+          "term": {
+            "title": {
+              "value": "javascript"
+              , "boost": 100
+            }
+          }
+        }
+      ]
+    }
+  },
+   "_source": ["title","description"]
+}
