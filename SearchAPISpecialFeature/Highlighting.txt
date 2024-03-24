@@ -1,0 +1,94 @@
+This query : To find the documents where the content fields contains words [market , in , china ]
+
+POST /test-documents-v1/_search
+{
+    "query": {
+        "query_string": {
+            "query": "market in china",
+            "fields": ["content"] // this Fields search in content filed in that documents
+        }
+    }
+}
+
+---------------------------------
+
+This query : To find the documents where the content fields contains words [market , in , china ] and highlights these words in the search results using bold tags (`<b>` and `</b>`), with each highlighted snippet containing up to 20 characters and up to 10 fragments per document.
+
+POST /test-documents-v1/_search
+{
+    "query": {
+        "query_string": {
+            "query": "market in china",
+            "fields": ["content"]
+        }
+    },
+    "highlight": { // Specifies how to highlight the search results
+        "order": "score", //
+        "pre_tags" : ["<b>"], //Tags to insert before highlighted snippets
+        "post_tags" : ["</b>"], // Tags to insert after highlighted snippets
+        "fields": {
+            "content": { // this feild to highlight
+                "type" : "unified", // unified highlighter offers more features and flexibility than "plain"
+                "fragment_size": 20, // The size of each fragment highlighted snippetin characters
+                "number_of_fragments": 10 // The maximum number of fragments to return
+            }
+        }
+    }
+}
+
+-----------------------------------------------------------
+
+POST /test-documents-v1/_search
+{
+    "query": {
+        "query_string": {
+            "query": "market in china",
+            "fields": ["content"]
+        }
+    },
+    "highlight": {
+        "order": "score",
+        "pre_tags" : ["<b>"],
+        "post_tags" : ["</b>"],
+        "fields": {
+            "content": {
+                "type" : "plain",  // the plain highlighter is simpler and more suitable for basic highlighting needs "//" unified highlighter offers more            				     features and flexibility than "plain"
+
+                "fragment_size": 20,
+                "number_of_fragments": 10
+            }
+        }
+    }
+}
+
+----------------------------------------------------------
+
+this query: It will  looks for the term technical in the biography field of the author . It then returns the matching documents with the biography field highlighted, the firstname and lastname fields from the inner hits source.
+
+
+POST /sample-book-v2/_search
+{
+  "query": {
+    "nested": { // the nested path to the author field 
+      "path": "author",
+      "query": {
+        "query_string": {  // here search for the term "technical" in the author.biography field
+          "default_field": "author.biography",
+          "query": "technical"
+        }
+      },
+      "inner_hits": { // here How to display the nested matches
+        "_source": {
+          "excludes": ["author.firstname", "author.biography", "author.lastname"]
+        },
+        "highlight": { // these filed will highlight in the inner hits source
+           "fields": { 
+             "author.biography": {}
+           }
+        }
+      }
+    }
+  }
+}
+
+-------------------------------------------------------
